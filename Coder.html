@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Code Editor for HTML</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" href="l.png">
+    <script src="https://ace.c9.io/build/src-noconflict/ace.js"></script>
+    <script src="https://ace.c9.io/build/src-noconflict/ext-language_tools.js"></script>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
+      body{
+        background-color: #333;
+        font-family: Georgia;
+        color: #fff;
+      }
+      .button{
+        padding: 15px;
+        font-size: 18px;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+        background-color: #333;
+      }
+      img{
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      #load{
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #222;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        flex-direction: column;
+      }
+      #lo{
+        box-shadow: 0 0 10px #ccc;
+        padding: 5px;
+      }
+      h1.loading{
+        font-size: 3em;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 700;
+      }
+      span[class^="dot-"]{
+        opacity: 0;
+      }
+      .dot-one{
+        animation: dot-one 2s infinite linear
+      }
+      .dot-two{
+        animation: dot-two 2s infinite linear
+      }
+      .dot-three{
+        animation: dot-three 2s infinite linear;
+      }
+      @keyframes dot-one{
+        0%{
+          opacity: 0;
+        }
+        15%{
+          opacity: 0;
+        }
+        25%{
+          opacity: 1;
+        }
+        100%{
+          opacity: 1;
+        }
+      }
+      @keyframes dot-two{
+        0%{
+          opacity: 0;
+        }
+        25%{
+          opacity: 0;
+        }
+        50%{
+          opacity: 1;
+        }
+        100%{
+          opacity: 1;
+        }
+      }
+      @keyframes dot-three{
+        0%{
+          opacity: 0;
+        }
+        50%{
+          opacity: 0;
+        }
+        75%{
+          opacity: 1;
+        }
+        100%{
+          opacity: 1;
+        }
+      }
+      #left-side{
+        position: fixed;
+        left: 0;
+        bottom: 10px;
+        top: 10px;
+        width: 60px;
+        justify-content: space-between;
+        align-items: center;
+        display: flex;
+        padding: 5px;
+        flex-direction: column;
+        border-radius: 0px 25px 25px 0px;
+        background-color: #333;
+      }
+      #myProfile{
+        width: 50px;
+        height: 50px;
+        padding: 0;
+        text-align: center;
+      }
+      #myself{
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+      }
+      #preview{
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 60px;
+        color: #fff;
+        height: 100vh;
+        width: 100%;
+        border: none;
+        padding: 3px 3px 10px 3px;
+      }
+      #editor{
+        position: fixed;
+        top: 0;
+        left: 71px;
+        padding: 10px;
+        right: 0;
+        border-radius: 25px;
+        bottom: 0;
+      }
+      #header2{
+        padding: 5px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        display: none;
+        right: 0;
+        justify-content: space-between;
+        height: 50px;
+        background-color: #333;
+      }
+      #header3{
+        padding: 5px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50px;
+        border-bottom: 1px solid #ccc;
+        background-color: #434343;
+      }
+      #header4{
+        padding: 5px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        border-bottom: 1px solid #ccc;
+        background-color: #434343;
+      }
+      #header5{
+        padding: 5px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+        border-bottom: 1px solid #ccc;
+        background-color: #434343;
+      }
+      #userProfile{
+        right: 0;
+        top: 0;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #222;
+        position: fixed;
+        z-index: 30;
+        display: none;
+        bottom: 0%;
+        left: 0;
+      }
+      #backBtn2, #backBtn5, #publish, #backBtn4{
+        border-radius: 50%;
+        background-color: transparent;
+      }
+      #publish{
+        width: 50px;
+        height: 50px;
+        font-size: 14px;
+        text-align: center;
+        padding: 0;
+        margin: 0;
+      }
+      #userInfo{
+        position: absolute;
+        top: 60px;
+        display: flex;
+        flex-direction: column;
+        right: 0;
+        text-align: center;
+        left: 0;
+      }
+      .myImage{
+        width: 160px;
+        height: 160px;
+      }
+      #allUsersPosts {
+        background-color: black;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        display: none;
+        overflow: scroll;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      #settingsDiv{
+        background-color: #012;
+        color: #fff;
+        position: fixed;
+        top: 0;
+        overflow: scroll;
+        display: none;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      #middle-bar{
+        padding: 0;
+        margin: 0;
+      }
+      #previewFrame{
+        width: 100%;
+        z-index: 40;
+        height: 500px;
+        overflow: scroll;
+        margin-bottom: 10px;
+      }
+      #spanTime{
+        float: right;
+        font-size: 14px;
+        padding: 20px;
+      }
+      .edit-button{
+        padding: 10px;
+        background-color: #0076ff;
+        cursor: pointer;
+        border: none;
+        border-radius: 3px;
+      }
+      #myPosts{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: warp;
+      }
+      #lists{
+        margin-top: 62px;
+      }
+      #titleCode{
+        margin-top: 10px;
+      }
+      #listsSettings{
+        margin-top: 64px;
+        display: flex;
+        flex-direction: column;
+      }
+      #flex{
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+      }
+      select{
+        background-color: transparent;
+        color: #fff;
+        border: none;
+        outline: none;
+      }
+      #displayTitle{
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        outline: none;
+        text-align: center;
+        height: 35px;
+        background-color: transparent;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="containerLogin" style="display: none;">
+      <button id="signIn" class="button"><img src="Google.jpg" id="google"></button>
+    </div>
+    <div id="containerApp" style="display: none;">
+      <div id="left-side">
+        <div id="top-bar">
+          <button id="uploadFile" class="button"><i class="fa fa-upload"></i></button>
+          <button id="runBtn" class="button"><i class="fa fa-play"></i></button>
+          <button id="saveFile" class="button"><i class="fa fa-save"></i></button>
+        </div>
+        <div id="middle-bar">
+          <button id="publish" class="button"><i class="fa fa-plus"></i>Publish</button>
+        </div>
+        <div id="bottom-bar">
+          <button id="myProfile" class="button"><img id="myself" src="3d.jpg"></button>
+          <button id="labs" class="button"><i class="fa fa-flask"></i></button>
+          <button id="settings" class="button"><i class="fa fa-cog"></i></button>
+        </div>
+      </div>
+      <div id="editor"></div>
+      <div id="userProfile" style="display: ;">
+        <div id="header3">
+          <button id="backBtn2" class="button"><i class="fa fa-arrow-left"></i></button>
+        </div>
+        <div id="userInfo">
+          <img id="myImage" class="myImage" src="mi.jpg">
+          <span id="userName"></span>
+          <hr>
+          <div id="myPosts"></div>
+          <button id="signOutButton" class="button">signOutButton</button>
+        </div>
+      </div>
+      <div id="allUsersPosts">
+        <div id="header4">
+          <button id="backBtn4" class="button"><i class="fa fa-arrow-left"></i></button>
+        </div>
+        <div id="lists"></div>
+      </div>
+      <div id="settingsDiv">
+        <div id="header5">
+          <button id="backBtn5" class="button"><i class="fa fa-arrow-left"></i></button>
+        </div>
+        <div id="listsSettings">
+          <div id="flex">
+            <span>Font Size:</span>
+            <select id="selectFontSize">
+              <option value="18" selected>18</option>
+              <option value="20">20</option>
+              <option value="22">22</option>
+              <option value="24">24</option>
+              <option value="26">26</option>
+              <option value="28">28</option>
+              <option value="30">30</option>
+              <option value="32">32</option>
+            </select>
+          </div>
+          <div id="flex">
+            <span>Theme:</span>
+            <select id="selectTheme">
+              <option value="monokai" selected>Monokai</option>
+              <option value="tomorrow_night">Tomorrow Night</option>
+              <option value="nord_dark">Nord Dark</option>
+              <option value="terminal">Terminal</option>
+              <option value="cobalt">Cobalt</option>
+              <option value="ambiance">Ambiance</option>
+              <option value="github">GitHub</option>
+              <option value="dracula">Dracula</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="header2">
+        <button id="backBtn" class="button"><i class="fa fa-arrow-left"></i></button>
+        <input type="text" readonly id="displayTitle">
+        <button id="publish2" class="button"><i class="fa fa-plus"></i></button>
+      </div>
+      <iframe id="preview"></iframe>
+    </div>
+    <div id="load">
+      <img src="loader.gif" id="lo">
+      <div class="wrapper">
+        <div class="loading-text">
+          <h1>LOADING
+          <span class="dot-one"> .</span>
+          <span class="dot-two"> .</span>
+          <span class="dot-three"> .</span>
+          </h1>
+          </div>
+      </div>
+    </div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, where} from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyA7SBddUcN2dDKwYwPR_o4HsbHgU648fM8",
+      authDomain: "new-app-ad5ea.firebaseapp.com",
+      databaseURL: "https://new-app-ad5ea-default-rtdb.firebaseio.com",
+      projectId: "new-app-ad5ea",
+      storageBucket: "new-app-ad5ea.appspot.com",
+      messagingSenderId: "13560733487",
+      appId: "1:13560733487:web:05dcd1db0bcf027b410bda",
+      measurementId: "G-F86L86DK9W"
+    };
+    const app = initializeApp(firebaseConfig);
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const containerLogin = document.getElementById('containerLogin');
+    const containerApp = document.getElementById('containerApp');
+    const btnLogin = document.getElementById('signIn');
+    let currentUser = null;
+    btnLogin.addEventListener('click', function () {
+      signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        document.getElementById('myself').src = user.photoURL;
+        document.getElementById('myImage').src = user.photoURL;
+        document.getElementById('userName').innerText = user.displayName;
+        containerLogin.style.display = 'none';
+        containerApp.style.display = 'block';
+      }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage  = error.message ;
+        const email = error.customData.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        containerLogin.style.display = 'block';
+        containerApp.style.display = 'none';
+        alert(errorMessage)
+      });
+    });
+    signOutButton.addEventListener('click', function () {
+      signOut(auth).then(() => {
+      }).catch((error) => {
+        const errorMessage = error.message;
+        alert(error);
+      });
+    });
+    window.onload = function () {
+      document.getElementById('load').style.display = 'none';
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById('myself').src = user.photoURL;
+          containerLogin.style.display = 'none';
+          document.getElementById('myImage').src = user.photoURL;
+          document.getElementById('userName').innerText = user.displayName;
+          var r = document.getElementById('load');
+          r.style.display = 'none';
+          containerApp.style.display = 'block';
+        } else {
+          document.getElementById('myself').src = '3d.jpg';
+          containerApp.style.display = 'none';
+          containerLogin.style.display = 'block';
+        }
+      });
+    };
+    const editor = ace.edit('editor');
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/html");
+    editor.setOptions({
+        autoScrollEditorIntoView: true,
+        enableBasicAutocompletion: true,
+        useWorker: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true,
+        showInvisibles: true,
+        showPrintMargin: true,
+        fontSize: "18px",
+        displayIndentGuides: true,
+    });
+    editor.setOption("wrap", true);
+    document.getElementById('runBtn').addEventListener('click', function () {
+      let htmlCode = editor.getValue();
+      let previewFrame = document.getElementById("preview");
+      let editors = document.getElementById("editor");
+      let leftSide = document.getElementById("left-side");
+      let header2 = document.getElementById('header2');
+      let editorContent = htmlCode;
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(editorContent, 'text/html');
+      let titleElement = htmlDoc.querySelector('title');
+      let title = titleElement ? titleElement.textContent.trim() : 'Untitled';
+      var input = document.getElementById('displayTitle');
+      input.value = title;
+      let preview = previewFrame.contentDocument || previewFrame.contentWindow.document;
+      preview.open();
+      preview.write(htmlCode);
+      preview.close();
+      previewFrame.style.display = 'block';
+      header2.style.display = 'flex';
+      editors.style.display = 'none';
+      leftSide.style.display = 'none';
+    })
+    document.getElementById('backBtn').addEventListener('click', function () {
+      let previewFrame = document.getElementById("preview");
+      let editors = document.getElementById("editor");
+      let leftSide = document.getElementById("left-side");
+      let header2 = document.getElementById('header2');
+      leftSide.style.display = 'flex';
+      editors.style.display = 'block';
+      header2.style.display = 'none';
+      previewFrame.style.display = 'none';
+    })
+    document.getElementById('uploadFile').addEventListener('click', function () {
+      var input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.html,.css,.js';
+      input.onchange = function () {
+        var file = input.files[0];
+        var reader = new FileReader();
+        reader.onload = function () {
+            var extension = file.name.split('.').pop().toLowerCase();
+            if (extension === 'html' || extension === 'css' || extension === 'js') {
+                editor.setValue(reader.result);
+            } else {
+                alert('Please upload only .html, .css, or .js files.');
+            }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    })
+    document.getElementById('saveFile').addEventListener('click', function () {
+      let editorContent = editor.getValue();
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(editorContent, 'text/html');
+      let titleElement = htmlDoc.querySelector('title');
+      let title = titleElement ? titleElement.textContent.trim() : 'Untitled';
+      if (confirm(`Do you want to save the file as "${title}.html"?`)) {
+        let blob = new Blob([editorContent], { type: 'text/plain' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    });
+    document.getElementById('backBtn2').addEventListener('click', function () {
+      document.getElementById('userProfile').style.display = 'none';
+    })
+    document.getElementById('backBtn4').addEventListener('click', function () {
+      document.getElementById('allUsersPosts').style.display = 'none';
+    })
+    document.getElementById('backBtn5').addEventListener('click', function () {
+      document.getElementById('settingsDiv').style.display = 'none';
+    })
+    document.getElementById('publish2').addEventListener('click', function () {
+      document.getElementById('publish').click();
+    })
+    document.getElementById('labs').addEventListener('click', function () {
+      document.getElementById('allUsersPosts').style.display = 'block';
+    })
+    document.getElementById('settings').addEventListener('click', function () {
+      document.getElementById('settingsDiv').style.display = 'block';
+    })
+    document.getElementById('myProfile').addEventListener('click', function () {
+      document.getElementById('userProfile').style.display = 'block';
+    })
+    document.getElementById('publish').addEventListener('click', function () {
+    var editorContent = editor.getValue();
+    var user = auth.currentUser;
+    if(editorContent === ''){
+      alert('File Empty')
+    } else {
+    if (user) {
+        var userId = user.uid;
+        var userName = user.displayName;
+        var userPhotoURL = user.photoURL;
+        var r = new Date();
+        var h = r.getHours();
+        var m = r.getMinutes();
+        var s = r.getSeconds();
+        var time = h + ' : ' + m + ' : ' + s;
+        var title = getTitle(editorContent);
+        addDoc(collection(db, 'codeSnippets'), {
+            userId: userId,
+            userName: userName,
+            userPhotoURL: userPhotoURL,
+            code: editorContent,
+            timestamp: time,
+            title: title
+        })
+        .then(() => {
+            alert('Code snippet published successfully!');
+        })
+        .catch((error) => {
+            alert('Error publishing code snippet: ' + error);
+        });
+    } else {
+        alert('User not logged in.');
+    }
+}
+});
+
+// Function to extract title from HTML content
+function getTitle(htmlContent) {
+    var match = htmlContent.match(/<title>(.*?)<\/title>/);
+    if (match && match.length > 1) {
+        return match[1];
+    } else {
+        return 'Untitled';
+    }
+}
+function renderCodeSnippet(data) {
+    var codeDiv = document.createElement('div');
+    var titleCode = document.createElement('div');
+    var img = document.createElement('img');
+    var spanName = document.createElement('span');
+    var divCode = document.createElement('div');
+    var spanTime = document.createElement('span');
+    spanTime.id = 'spanTime';
+    spanName.id = 'spanName';
+    titleCode.id = 'titleCode';
+    var hr = document.createElement('hr');
+    img.src = `${data.userPhotoURL}`;
+    spanName.innerText = `${data.userName}`;
+    titleCode.innerText = `${data.title}`;
+    spanTime.innerText = `${data.timestamp}`;
+    var editorDiv = document.createElement('div');
+    var br = document.createElement('br');
+    editorDiv.textContent = data.code;
+    editorDiv.style.width = '100%';
+    editorDiv.style.height = '500px';
+    editorDiv.style.overflow = 'scroll';
+    divCode.appendChild(editorDiv);
+    var editor = ace.edit(editorDiv);
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/html");
+    editor.setValue(data.code);
+    editor.gotoLine(1);
+    editor.setOption ({
+      fontSize: '18px'
+    })
+    editor.setReadOnly(true);
+    editor.setOption("wrap", true);
+    divCode.id = 'previewFrame';
+    codeDiv.append(img, spanName, spanTime, br, titleCode, br, divCode, hr);
+    document.getElementById('lists').appendChild(codeDiv);
+}
+onSnapshot(collection(db, 'codeSnippets'), (querySnapshot) => {
+    document.getElementById('lists').innerHTML = '';
+    querySnapshot.forEach((doc) => {
+        renderCodeSnippet(doc.data());
+    });
+});
+const selectFontSize = document.getElementById('selectFontSize');
+selectFontSize.addEventListener('change', function () {
+    const selectedFontSize = this.value;
+    editor.setFontSize(selectedFontSize + "px");
+    localStorage.setItem('fontSize', selectedFontSize);
+});
+const savedFontSize = localStorage.getItem('fontSize');
+if (savedFontSize) {
+    editor.setFontSize(savedFontSize + "px");
+    selectFontSize.value = savedFontSize;
+} else {
+    const defaultFontSize = "18";
+    editor.setFontSize(defaultFontSize + "px");
+    localStorage.setItem('fontSize', defaultFontSize);
+}
+const selectTheme = document.getElementById('selectTheme');
+selectTheme.addEventListener('change', function () {
+    const selectedTheme = this.value;
+    editor.setTheme("ace/theme/" + selectedTheme);
+    localStorage.setItem('theme', selectedTheme);
+});
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+    editor.setTheme("ace/theme/" + savedTheme);
+    selectTheme.value = savedTheme;
+} else {
+    const defaultTheme = "monokai";
+    editor.setTheme("ace/theme/" + defaultTheme);
+    localStorage.setItem('theme', defaultTheme);
+}
+    </script>
+  </body>
+</html>
