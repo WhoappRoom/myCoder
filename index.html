@@ -316,11 +316,17 @@
         height: 35px;
         background-color: transparent;
       }
+      #containerLogin{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
     </style>
   </head>
   <body>
     <div id="containerLogin" style="display: none;">
-      <button id="signIn" class="button"><img src="Google.jpg" id="google"></button>
+      <button id="signIn" class="button"><img src="Google.jpg" id="google"><br>SignIn</button>
     </div>
     <div id="containerApp" style="display: none;">
       <div id="left-side">
@@ -447,7 +453,7 @@
         const errorMessage  = error.message ;
         const email = error.customData.email;
         const credential = GoogleAuthProvider.credentialFromError(error);
-        containerLogin.style.display = 'block';
+        containerLogin.style.display = 'flex';
         containerApp.style.display = 'none';
         alert(errorMessage)
       });
@@ -473,7 +479,7 @@
         } else {
           document.getElementById('myself').src = '3d.jpg';
           containerApp.style.display = 'none';
-          containerLogin.style.display = 'block';
+          containerLogin.style.display = 'flex';
         }
       });
     };
