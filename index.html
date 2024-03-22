@@ -179,6 +179,7 @@
         justify-content: space-between;
         align-items: center;
         height: 50px;
+        z-index: 9;
         border-bottom: 1px solid #ccc;
         background-color: #434343;
       }
@@ -270,13 +271,6 @@
         font-size: 14px;
         padding: 20px;
       }
-      .edit-button{
-        padding: 10px;
-        background-color: #0076ff;
-        cursor: pointer;
-        border: none;
-        border-radius: 3px;
-      }
       #myPosts{
         width: 100%;
         display: flex;
@@ -314,6 +308,7 @@
         outline: none;
         text-align: center;
         height: 35px;
+        width: 100%;
         background-color: transparent;
       }
       #containerLogin{
@@ -321,6 +316,25 @@
         justify-content: center;
         align-items: center;
         height: 100vh;
+      }
+      #buttonsDiv{
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+      }
+      .buttons{
+        padding: 10px;
+        background-color: transparent;
+        color: #fff;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        border: none;
+        font-size: 25px;
+      }
+      button:active{
+        background-color: #a9a9a959;
       }
     </style>
   </head>
@@ -334,6 +348,7 @@
           <button id="uploadFile" class="button"><i class="fa fa-upload"></i></button>
           <button id="runBtn" class="button"><i class="fa fa-play"></i></button>
           <button id="saveFile" class="button"><i class="fa fa-save"></i></button>
+          <button id="pasteCode" class="button"><i class="fa fa-paste"></i></button>
         </div>
         <div id="middle-bar">
           <button id="publish" class="button"><i class="fa fa-plus"></i>Publish</button>
@@ -384,15 +399,32 @@
           <div id="flex">
             <span>Theme:</span>
             <select id="selectTheme">
-              <option value="monokai" selected>Monokai</option>
-              <option value="tomorrow_night">Tomorrow Night</option>
-              <option value="nord_dark">Nord Dark</option>
-              <option value="terminal">Terminal</option>
-              <option value="cobalt">Cobalt</option>
-              <option value="ambiance">Ambiance</option>
-              <option value="github">GitHub</option>
-              <option value="dracula">Dracula</option>
-            </select>
+              <option value="">Theme</option>
+              <option value="chrome">Chrome</option>
+              <option value="nord_dark" selected>Nord Dark</option>
+               <option value="github">GitHub</option>
+               <option value="terminal">Terminal</option>
+               <option value="tomorrow_night">Tomorrow Night</option>
+               <option value="tomorrow_night_blue">Tomorrow Night Blue</option>
+               <option value="tomorrow_night_bright">Tomorrow Night Bright</option>
+               <option value="monokai">Monokai</option>
+               <option value="one_dark">One Dark</option>
+               <option value="ambiance">Ambiance</option>
+               <option value="dracula">Dracula</option>
+               <option value="chaos">Chaos</option>
+               <option value="github_dark">GitHub Dark</option>
+               <option value="cobalt">Cobalt</option>
+               <option value="gruvbox">Gruvbox</option>
+               <option value="clouds">Clouds</option>
+               <option value="crimson_editor">Crimson Editor</option>
+               <option value="dawn">Dawn</option>
+               <option value="dreamweaver">Dreamweaver</option>
+               <option value="eclipse">Eclipse</option>
+               <option value="iplastic">iPlastic</option>
+               <option value="solarized_light">Solarized Light</option>
+               <option value="textmate">TextMate</option>
+               <option value="xcode">XCode</option>
+           </select>
           </div>
         </div>
       </div>
@@ -493,9 +525,11 @@
         enableSnippets: true,
         enableLiveAutocompletion: true,
         showInvisibles: true,
-        showPrintMargin: false,
+        showPrintMargin: true,
         fontSize: "18px",
         displayIndentGuides: true,
+        tabSize: 2,
+        useSoftTabs: true
     });
     editor.setOption("wrap", true);
     document.getElementById('runBtn').addEventListener('click', function () {
@@ -570,6 +604,14 @@
     document.getElementById('backBtn2').addEventListener('click', function () {
       document.getElementById('userProfile').style.display = 'none';
     })
+    document.getElementById('pasteCode').addEventListener('click', async function () {
+    try {
+        const text = await navigator.clipboard.readText();
+        editor.setValue(text);
+    } catch (error) {
+        alert('Failed to read clipboard contents: ', error);
+    }
+    });
     document.getElementById('backBtn4').addEventListener('click', function () {
       document.getElementById('allUsersPosts').style.display = 'none';
     })
@@ -588,6 +630,13 @@
     document.getElementById('myProfile').addEventListener('click', function () {
       document.getElementById('userProfile').style.display = 'block';
     })
+    var change = new Date();
+    var hh = change.getHours();
+    if(hh < 12) {
+      document.body.style.backgroundColor = '#434343';
+    } else{
+      document.body.style.backgroundColor = '#333';
+    }
     document.getElementById('publish').addEventListener('click', function () {
     var editorContent = editor.getValue();
     var user = auth.currentUser;
@@ -649,6 +698,43 @@ function renderCodeSnippet(data) {
     titleCode.innerText = `${data.title}`;
     spanTime.innerText = `${data.timestamp}`;
     var editorDiv = document.createElement('div');
+    var buttonsDiv = document.createElement('div');
+    buttonsDiv.id = 'buttonsDiv';
+    var shareBtn = document.createElement('button');
+    shareBtn.innerHTML = '<i class="fa fa-share"></i>';
+    var getCodeBtn = document.createElement('button');
+    getCodeBtn.innerHTML = '<i class="fa fa-file-code"></i>';
+    shareBtn.classList.add('buttons');
+    getCodeBtn.classList.add('buttons');
+    getCodeBtn.addEventListener('click', function () {
+    const code = editor.getValue();
+    navigator.clipboard.writeText(code)
+        .then(() => {
+            var btnP = document.getElementById('pasteCode');
+            var backBtn4 = document.getElementById('backBtn4');
+            btnP.click();
+            backBtn4.click();
+        })
+        .catch((error) => {
+            alert('Unable to copy code to clipboard: ' + error);
+            alert('Failed to copy code to clipboard');
+        });
+    });
+    const shareData = {
+      title: `${data.title}`,
+      text: `${data.code}`,
+      url: "https://my-coder-seven.vercel.app/",
+    };
+    shareBtn.addEventListener("click", async () => {
+      try {
+        await navigator.share(shareData);
+        alert("Code shared successfully");
+      } catch (err) {
+        alert(`Error: ${err}`);
+        }
+    });
+
+    buttonsDiv.append(getCodeBtn, shareBtn);
     var br = document.createElement('br');
     editorDiv.textContent = data.code;
     editorDiv.style.width = '100%';
@@ -666,7 +752,7 @@ function renderCodeSnippet(data) {
     editor.setReadOnly(true);
     editor.setOption("wrap", true);
     divCode.id = 'previewFrame';
-    codeDiv.append(img, spanName, spanTime, br, titleCode, br, divCode, hr);
+    codeDiv.append(img, spanName, spanTime, br, titleCode, br, divCode, br, buttonsDiv, hr);
     document.getElementById('lists').appendChild(codeDiv);
 }
 onSnapshot(collection(db, 'codeSnippets'), (querySnapshot) => {
