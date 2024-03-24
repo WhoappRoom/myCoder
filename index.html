@@ -6,6 +6,8 @@
     <link rel="icon" href="l.png">
     <script src="https://ace.c9.io/build/src-noconflict/ace.js"></script>
     <script src="https://ace.c9.io/build/src-noconflict/ext-language_tools.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
       @import url(https://fonts.googleapis.com/css?family=Roboto:400,700);
       body{
@@ -32,6 +34,7 @@
         left: 0;
         right: 0;
         bottom: 0;
+        z-index: 100;
         background-color: #222;
         display: flex;
         justify-content: center;
@@ -112,6 +115,7 @@
         align-items: center;
         display: flex;
         padding: 5px;
+        overflow: scroll;
         flex-direction: column;
         border-radius: 0px 25px 25px 0px;
         background-color: #333;
@@ -137,7 +141,7 @@
         height: 100vh;
         width: 100%;
         border: none;
-        padding: 3px 3px 10px 3px;
+        padding: 0px 2px 0px 0px;
       }
       #editor{
         position: fixed;
@@ -164,6 +168,9 @@
         position: fixed;
         top: 0;
         left: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         right: 0;
         height: 50px;
         border-bottom: 1px solid #ccc;
@@ -204,7 +211,6 @@
         background-color: #222;
         position: fixed;
         z-index: 30;
-        display: none;
         bottom: 0%;
         left: 0;
       }
@@ -226,12 +232,13 @@
         display: flex;
         flex-direction: column;
         right: 0;
+        overflow: scroll;
         text-align: center;
         left: 0;
       }
       .myImage{
-        width: 160px;
-        height: 160px;
+        width: 60px;
+        height: 60px;
       }
       #allUsersPosts {
         background-color: black;
@@ -272,11 +279,14 @@
         padding: 20px;
       }
       #myPosts{
-        width: 100%;
+        width: 98%;
         display: flex;
+        overflow: scroll;
         align-items: center;
-        justify-content: space-between;
-        flex-wrap: warp;
+        justify-content: center;
+        height: 890px;
+        text-align: left;
+        flex-direction: column;
       }
       #lists{
         margin-top: 62px;
@@ -293,13 +303,19 @@
         display: flex;
         justify-content: space-between;
         padding: 10px;
+        height: 35px;
         border-bottom: 1px solid #ccc;
       }
       select{
         background-color: transparent;
         color: #fff;
         border: none;
+        font-size: 20px;
         outline: none;
+      }
+      input[type="checkbox"]{
+        width: 30px;
+        height: 30px;
       }
       #displayTitle{
         border: none;
@@ -327,14 +343,52 @@
         padding: 10px;
         background-color: transparent;
         color: #fff;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        cursor: pointer;
         border: none;
         font-size: 25px;
       }
       button:active{
         background-color: #a9a9a959;
+      }
+      #na{
+        font-size: 15px;
+        color: #ccc;
+        font-family: Trebuchet MS;
+        font-weight: lighter;
+      }
+      #searchBtn{
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+      }
+      #searchBtn:active{
+        background-color: transparent;
+      }
+      #searchInput{
+        width: 100%;
+        height: 20px;
+        padding: 10px;
+        outline: none;
+        transition: 0.5s;
+        color: #fff;
+        background-color: transparent;
+        border: 1px solid #5d5d5dbb;
+        border-radius: 3px;
+      }
+      #searchInput:hover{
+        box-shadow: 0 0 3px #0093a4bb;
+      }
+      #btn{
+        width: 90%;
+        padding: 15px;
+        background-color: #0076cc;
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 20px;
       }
     </style>
   </head>
@@ -348,7 +402,10 @@
           <button id="uploadFile" class="button"><i class="fa fa-upload"></i></button>
           <button id="runBtn" class="button"><i class="fa fa-play"></i></button>
           <button id="saveFile" class="button"><i class="fa fa-save"></i></button>
-          <button id="pasteCode" class="button"><i class="fa fa-paste"></i></button>
+          <button id="pasteCode" class="button"><i class="fa fa-clipboard"></i></button>
+          <button id="copyCode" class="button"><i class="fa fa-copy"></i></button>
+          <button id="undo" class="button"><i class="fa fa-undo"></i></button>
+          <button id="redo" class="button"><i class="fa fa-redo"></i></button>
         </div>
         <div id="middle-bar">
           <button id="publish" class="button"><i class="fa fa-plus"></i>Publish</button>
@@ -360,21 +417,21 @@
         </div>
       </div>
       <div id="editor"></div>
-      <div id="userProfile" style="display: ;">
+      <div id="userProfile" style="display: none;">
         <div id="header3">
           <button id="backBtn2" class="button"><i class="fa fa-arrow-left"></i></button>
+          <img id="myImage" class="myImage" src="mi.jpg">
         </div>
         <div id="userInfo">
-          <img id="myImage" class="myImage" src="mi.jpg">
-          <span id="userName"></span>
-          <hr>
           <div id="myPosts"></div>
-          <button id="signOutButton" class="button">signOutButton</button>
+          <button id="signOutButton" class="button"><i class="fa fa-sign-out-alt"></i></button>
         </div>
       </div>
       <div id="allUsersPosts">
         <div id="header4">
           <button id="backBtn4" class="button"><i class="fa fa-arrow-left"></i></button>
+          <input type="text" id="searchInput" placeholder="Search by title...">
+          <button id="searchBtn" class="buttons"><i class="fa fa-search"></i></button>
         </div>
         <div id="lists"></div>
       </div>
@@ -426,6 +483,27 @@
                <option value="xcode">XCode</option>
            </select>
           </div>
+          <div id="flex">
+            <span>Show Line Numbers:</span>
+            <input type="checkbox" id="showLineNumbers" checked>
+          </div>
+          <div id="flex">
+            <span>Show Spaces:</span>
+            <input type="checkbox" id="showSpaces" checked>
+          </div>
+          <div id="flex">
+            <span>Soft Tab:</span>
+            <input type="checkbox" id="softTab" checked>
+          </div>
+          <div id="flex">
+            <span>Tab Size:</span>
+            <select id="tabSize">
+              <option value="2" selected>2</option> 
+              <option value="4">4</option> 
+              <option value="6">6</option> 
+              <option value="8">8</option> 
+            </select>
+          </div>
         </div>
       </div>
       <div id="header2">
@@ -448,9 +526,9 @@
       </div>
     </div>
     <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, addDoc, query, orderBy, where} from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { getFirestore, collection, onSnapshot, doc, addDoc, query, orderBy, where } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
     const firebaseConfig = {
       apiKey: "AIzaSyA7SBddUcN2dDKwYwPR_o4HsbHgU648fM8",
       authDomain: "new-app-ad5ea.firebaseapp.com",
@@ -477,7 +555,7 @@
         const user = result.user;
         document.getElementById('myself').src = user.photoURL;
         document.getElementById('myImage').src = user.photoURL;
-        document.getElementById('userName').innerText = user.displayName;
+        window.location.reload();
         containerLogin.style.display = 'none';
         containerApp.style.display = 'block';
       }).catch((error) => {
@@ -492,6 +570,7 @@
     });
     signOutButton.addEventListener('click', function () {
       signOut(auth).then(() => {
+        window.location.reload();
       }).catch((error) => {
         const errorMessage = error.message;
         alert(error);
@@ -504,7 +583,6 @@
           document.getElementById('myself').src = user.photoURL;
           containerLogin.style.display = 'none';
           document.getElementById('myImage').src = user.photoURL;
-          document.getElementById('userName').innerText = user.displayName;
           var r = document.getElementById('load');
           r.style.display = 'none';
           containerApp.style.display = 'block';
@@ -608,6 +686,7 @@
     try {
         const text = await navigator.clipboard.readText();
         editor.setValue(text);
+        editor.focus();
     } catch (error) {
         alert('Failed to read clipboard contents: ', error);
     }
@@ -672,16 +751,58 @@
     }
 }
 });
-
-// Function to extract title from HTML content
-function getTitle(htmlContent) {
-    var match = htmlContent.match(/<title>(.*?)<\/title>/);
-    if (match && match.length > 1) {
-        return match[1];
-    } else {
-        return 'Untitled';
-    }
+onSnapshot(collection(db, 'codeSnippets'), (querySnapshot) => {
+    const currentUser = auth.currentUser;
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (currentUser && currentUser.uid === data.userId) {
+          showMeMyPosts(data);
+        }
+    });
+});
+function showMeMyPosts(data){
+  var myPosts = document.getElementById('myPosts');
+  var btn = document.createElement('buttin');
+  btn.innerHTML = `${data.title}<i class="fa fa-eye"></i>`;
+  btn.id = 'btn';
+  myPosts.append(btn);
+  btn.addEventListener('click', function () {
+    var searchInput = document.getElementById('searchInput');
+    var backBtn2 = document.getElementById('backBtn2');
+    var labs = document.getElementById('labs');
+    var searchBtn = document.getElementById('searchBtn');
+    searchInput.value = data.title;
+    searchBtn.click();
+    var load = document.getElementById('load');
+    load.style.display = 'flex';
+    var randomNumber = Math.floor(Math.random() * 9) + 1;
+    console.log(randomNumber);
+    setTimeout( function () {
+      load.style.display = 'none';
+      labs.click();
+      backBtn2.click();
+      }, randomNumber + '00');
+  })
 }
+var copyButton = document.getElementById('copyCode');
+copyButton.addEventListener("click", function() {
+  var htmlContent = editor.getValue();
+  var textarea = document.createElement("textarea");
+  textarea.value = htmlContent;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textarea);
+  editor.focus();
+});
+document.getElementById('undo').addEventListener('click', function() {
+  editor.undo();
+  editor.focus();
+});
+document.getElementById('redo').addEventListener('click', function() {
+  editor.redo();
+  editor.focus();
+});
 function renderCodeSnippet(data) {
     var codeDiv = document.createElement('div');
     var titleCode = document.createElement('div');
@@ -697,14 +818,18 @@ function renderCodeSnippet(data) {
     spanName.innerText = `${data.userName}`;
     titleCode.innerText = `${data.title}`;
     spanTime.innerText = `${data.timestamp}`;
+    titleCode.classList.add('title');
     var editorDiv = document.createElement('div');
     var buttonsDiv = document.createElement('div');
     buttonsDiv.id = 'buttonsDiv';
     var shareBtn = document.createElement('button');
-    shareBtn.innerHTML = '<i class="fa fa-share"></i>';
+    shareBtn.innerHTML = '<i class="fa fa-share"></i><br><span id="na">Share</span>';
     var getCodeBtn = document.createElement('button');
-    getCodeBtn.innerHTML = '<i class="fa fa-file-code"></i>';
+    var downloadCode = document.createElement('button');
+    getCodeBtn.innerHTML = '<i class="fa fa-file-code"></i><br><span id="na">Get Code</span>';
+    downloadCode.innerHTML = '<i class="fa fa-download"></i><br><span id="na">Download</span>';
     shareBtn.classList.add('buttons');
+    downloadCode.classList.add('buttons');
     getCodeBtn.classList.add('buttons');
     getCodeBtn.addEventListener('click', function () {
     const code = editor.getValue();
@@ -716,8 +841,7 @@ function renderCodeSnippet(data) {
             backBtn4.click();
         })
         .catch((error) => {
-            alert('Unable to copy code to clipboard: ' + error);
-            alert('Failed to copy code to clipboard');
+            alert('Failed to copy code to clipboard Error: ' + error);
         });
     });
     const shareData = {
@@ -725,16 +849,33 @@ function renderCodeSnippet(data) {
       text: `${data.code}`,
       url: "https://my-coder-seven.vercel.app/",
     };
+    downloadCode.addEventListener('click', function () {
+      let editorContent = `${data.code}`;
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(editorContent, 'text/html');
+      let titleElement = htmlDoc.querySelector('title');
+      let title = titleElement ? titleElement.textContent.trim() : 'Untitled';
+      if (confirm(`Do you want to download the file as "${title}.html"?`)) {
+        let blob = new Blob([editorContent], { type: 'text/plain' });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = `${title}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    })
     shareBtn.addEventListener("click", async () => {
-      try {
+    try {
         await navigator.share(shareData);
         alert("Code shared successfully");
-      } catch (err) {
+    } catch (err) {
         alert(`Error: ${err}`);
-        }
+    }
     });
-
-    buttonsDiv.append(getCodeBtn, shareBtn);
+    buttonsDiv.append(getCodeBtn, downloadCode, shareBtn);
     var br = document.createElement('br');
     editorDiv.textContent = data.code;
     editorDiv.style.width = '100%';
@@ -753,12 +894,35 @@ function renderCodeSnippet(data) {
     editor.setOption("wrap", true);
     divCode.id = 'previewFrame';
     codeDiv.append(img, spanName, spanTime, br, titleCode, br, divCode, br, buttonsDiv, hr);
+    codeDiv.classList.add('code-snippet');
     document.getElementById('lists').appendChild(codeDiv);
+}
+function getTitle(htmlContent) {
+    var match = htmlContent.match(/<title>(.*?)<\/title>/);
+    if (match && match.length > 1) {
+        return match[1];
+    } else {
+        return 'Untitled';
+    }
 }
 onSnapshot(collection(db, 'codeSnippets'), (querySnapshot) => {
     document.getElementById('lists').innerHTML = '';
     querySnapshot.forEach((doc) => {
         renderCodeSnippet(doc.data());
+    });
+});
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+searchBtn.addEventListener('click', function () {
+    const searchQuery = searchInput.value.trim();
+    const codeSnippets = document.querySelectorAll('.code-snippet');
+    codeSnippets.forEach(snippet => {
+        const title = snippet.querySelector('.title').textContent.toLowerCase();
+        if (title.includes(searchQuery.toLowerCase())) {
+            snippet.style.display = 'block';
+        } else {
+            snippet.style.display = 'none';
+        }
     });
 });
 const selectFontSize = document.getElementById('selectFontSize');
@@ -790,6 +954,58 @@ if (savedTheme) {
     const defaultTheme = "monokai";
     editor.setTheme("ace/theme/" + defaultTheme);
     localStorage.setItem('theme', defaultTheme);
+}
+document.getElementById('showLineNumbers').addEventListener('change', function() {
+    const showLineNumbers = this.checked;
+    editor.setOption("showLineNumbers", showLineNumbers);
+    localStorage.setItem('showL', showLineNumbers);
+});
+var r = localStorage.getItem('showL');
+if(r){
+  editor.setOption("showLineNumbers", JSON.parse(r));
+  document.getElementById('showLineNumbers').checked = JSON.parse(r);
+} else {
+  editor.setOption("showLineNumbers", false);
+  document.getElementById('showLineNumbers').checked = false;
+}
+document.getElementById('showSpaces').addEventListener('change', function() {
+    const showSpaces = this.checked;
+    editor.setOption("showInvisibles", showSpaces);
+    localStorage.setItem('showS', showSpaces);
+});
+var t = localStorage.getItem('showS');
+if(t){
+  editor.setOption('showInvisibles', JSON.parse(t));
+  document.getElementById('showSpaces').checked = JSON.parse(t);
+} else {
+  editor.setOption('showInvisibles', false);
+  document.getElementById('showSpaces').checked = false;
+}
+document.getElementById('softTab').addEventListener('change', function() {
+    const showSpaces = this.checked;
+    editor.setOption("useSoftTabs", showSpaces);
+    localStorage.setItem('showSoftTap', showSpaces);
+});
+var y = localStorage.getItem('showSoftTap');
+if(y){
+  editor.setOption('useSoftTabs', JSON.parse(y));
+  document.getElementById('softTab').checked = JSON.parse(y);
+} else {
+  editor.setOption('useSoftTabs', false);
+  document.getElementById('softTab').checked = false;
+}
+document.getElementById('tabSize').addEventListener('change', function() {
+    var un = document.getElementById('tabSize').value;
+    editor.setOption('tabSize', un);
+    localStorage.setItem('tabSize', un);
+});
+var g = localStorage.getItem('tabSize');
+if(g){
+  editor.setOption('tabSize', parseInt(g));
+  document.getElementById('tabSize').value = g;
+} else {
+  editor.setOption('tabSize', 2);
+  document.getElementById('tabSize').value = '2';
 }
     </script>
   </body>
