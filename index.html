@@ -547,6 +547,8 @@
     const containerApp = document.getElementById('containerApp');
     const btnLogin = document.getElementById('signIn');
     let currentUser = null;
+    var url = 'https://my-coder-seven.vercel.app/';
+    window.open(url, '_blank');
     btnLogin.addEventListener('click', function () {
       signInWithPopup(auth, provider)
       .then((result) => {
